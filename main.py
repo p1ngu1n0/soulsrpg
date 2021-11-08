@@ -1,8 +1,7 @@
-from soulsrpg.soulsrpg import Game
+import soulsrpg 
 
 def main() -> int:
-    g = Game("Hello pygame", (500, 500))
-    g.run()
+    soulsrpg.Game("Hello pygame", (500, 500)).run()
     return 0
 
 if __name__ == "__main__":
