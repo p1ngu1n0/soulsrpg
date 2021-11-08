@@ -4,6 +4,7 @@
 # __autor__ = ["p1ngu1n0", "cdecompilador"]
 
 from soulsrpg.utils import Game
+from soulsrpg.shaders import *
 
 def main() -> int:
     Game("Hello pygame", (500, 500), None).run()
