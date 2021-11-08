@@ -1,4 +1,4 @@
-from soulsrpg.listener import MouseListener
+from soulsrpg.listener import MouseListener, KeyListener
 from pygame.event import Event
 from pygame.locals import *
 
@@ -42,6 +42,11 @@ def test_mouselistener():
         mouse.retrieve(e)
 
     assert mouse.is_dragging == False
+
+def test_keylistener():
+    # Impossible to make reliable keyboard tests for the moment
+    pass
+
 
 
 

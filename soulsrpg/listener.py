@@ -1,5 +1,6 @@
-from typing import Tuple, List
+from typing import Tuple, List, Optional
 import pygame
+from pygame.locals import *
 
 # Cool optimizations that will make code more readable without performance overhead
 # FIXME: Not working properly with python 3.10, maybe clone this depenency in repo
@@ -9,6 +10,34 @@ import pygame
 M_RIGHT  = 0
 M_CENTER = 1
 M_LEFT   = 2
+
+class KeyListener(object):
+    """ Wrapper around pygame, its underlying implementation is already ok """
+    keys: [bool]
+    mods: int
+    # Custom text capture engine (for commands)
+    
+    def __init__(self):
+        self.keys = []
+
+    def retreive(self):
+        """ Pain get everything from pygame """
+        self.keys = pygame.key.get_pressed()
+        self.mods = pygame.key.get_mods()
+
+    def key(self, k: int, mods: Optional[int] = None) -> bool:
+        """ Example:
+        ```python
+        keyboard.key(K_a) # Checks if A is pressed
+        keyboard.key(K_a, KMOD_LSHIFT)
+        ```
+        """
+        if mods == None:
+            if self.keys[k]:
+                return True
+        elif self.mods == mods and self.keys[k]:
+            return True
+        return False
 
 class MouseListener(object):
     """ Registers all important mouse states and them let convenient methods to access them

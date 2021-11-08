@@ -5,11 +5,10 @@
 
 from soulsrpg.utils import Game
 
-
 def main() -> int:
     Game("Hello pygame", (500, 500), None).run()
-    return 0
 
+    return 0
 
 if __name__ == "__main__":
     exit(main())

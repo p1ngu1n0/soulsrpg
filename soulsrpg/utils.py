@@ -1,4 +1,3 @@
-import sys
 import pygame
 from pygame.locals import *
 from typing import NamedTuple, Tuple, overload
@@ -24,7 +23,7 @@ class Game(object):
     running: bool
     # Listeners
     mouse: MouseListener
-    # keyboard: KeyListener
+    keyboard: KeyListener
     # pad: PadListener**
     # pencil: PencilListener**
     # mic: AudioListener**
@@ -38,9 +37,9 @@ class Game(object):
         # States initialization
         self.running = True
         self.mouse = MouseListener()
+        self.keyboard = KeyListener()
         self.img = pygame.image.load("assets/cara.png")
         self.clock = pygame.time.Clock()
-        
 
     def run(self):
         """ Game main loop 
@@ -70,11 +69,10 @@ class Game(object):
                 self.running = False
             else:
                 self.mouse.retrieve(event)
+        self.keyboard.retreive()
 
-        if self.mouse.is_dragging:
-            print("Dragging")
-        if self.mouse.rel() != (0.0, 0.0) and not self.mouse.is_dragging:
-            print("Just Mouse move")
+        if self.keyboard.key(K_a):
+            print("Pressed A")
 
     def render(self):
         """ Main rendering
