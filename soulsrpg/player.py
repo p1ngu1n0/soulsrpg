@@ -1,4 +1,3 @@
-from ctypes import set_last_error
 import pygame
 from pygame import key
 from pygame.constants import K_DOWN, K_LEFT, K_RIGHT, K_UP

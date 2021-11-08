@@ -3,13 +3,14 @@
 # NOTE(cdecompilador): Need this long path, otherwise tests need to import also OpenGL
 # __autor__ = ["p1ngu1n0", "cdecompilador"]
 
-from soulsrpg.utils import Game
-from soulsrpg.shaders import *
+from soulsrpg.utils import Director
+from soulsrpg.scenes import lvl1
+
 
 def main() -> int:
-    Game("Hello pygame", (500, 500), None).run()
-
+    Director(lvl1).loop()
     return 0
+
 
 if __name__ == "__main__":
     exit(main())
