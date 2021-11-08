@@ -13,7 +13,7 @@ M_LEFT   = 2
 
 class KeyListener(object):
     """ Wrapper around pygame, its underlying implementation is already ok """
-    keys: [bool]
+    keys: List[bool]
     mods: int
     # Custom text capture engine (for commands)
     
