@@ -24,7 +24,7 @@ class Game(object):
     running: bool
     # Listeners
     mouse: MouseListener
-    # keyboard: KeyListener
+    keyboard: KeyListener
     # pad: PadListener**
     # pencil: PencilListener**
     # mic: AudioListener**
@@ -71,6 +71,7 @@ class Game(object):
                 self.running = False
             else:
                 self.mouse.retrieve(event)
+        self.keyboard.retreive()
 
         if self.mouse.is_dragging:
             print("Dragging")
