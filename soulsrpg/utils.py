@@ -5,6 +5,8 @@ from typing import NamedTuple, Tuple, overload
 from abc import ABC, abstractmethod
 import OpenGL.GL as gl
 
+from .listener import *
+
 class Scene(ABC):
     @abstractmethod
     def update(self, dt: float):
@@ -19,15 +21,22 @@ class Game(object):
     window_surface: pygame.Surface
     # Variable to know when to stop the game
     running: bool
+    # Listeners
+    mouse: MouseListener
+    # keyboard: KeyListener
+    # pad: PadListener**
+    # pencil: PencilListener**
+    # mic: AudioListener**
     
     def __init__(self, title: str, size: Tuple[int, int], scene: None):
-        self.running = True
-
         # Initialize pygame and the window
         pygame.init()
-        # self.scene = scene
         self.window_surface = pygame.display.set_mode(size) #, DOUBLEBUF | OPENGL)
         pygame.display.set_caption(title)
+
+        # States initialization
+        self.running = True
+        self.mouse = MouseListener()
         self.img = pygame.image.load("assets/cara.png")
         self.clock = pygame.time.Clock()
         
@@ -53,11 +62,16 @@ class Game(object):
 
             ** = super optional
         """
-
+        
+        self.mouse.reset()
         for event in pygame.event.get():
             if event.type == QUIT:
                 self.running = False
-        # self.scene.update()
+            else:
+                self.mouse.retrieve(event)
+
+        if self.mouse.is_dragging:
+            print("Dragging")
 
     def render(self):
         """ Main rendering
@@ -67,8 +81,8 @@ class Game(object):
         """
 
         # Clear backbuffer
-        #gl.glClearColor(0.3, 0.2, 0.1, 1.0)
-        #gl.glClear(gl.GL_COLOR_BUFFER_BIT)
+        # gl.glClearColor(0.3, 0.2, 0.1, 1.0)
+        # gl.glClear(gl.GL_COLOR_BUFFER_BIT)
         self.window_surface.blit(self.img, (-30, -30))
         # self.scene.draw()
 
