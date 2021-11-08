@@ -27,8 +27,9 @@ class Game(object):
         # Initialize pygame and the window
         pygame.init()
         # self.scene = scene
-        self.window_surface = pygame.display.set_mode(size , DOUBLEBUF | OPENGL)
+        self.window_surface = pygame.display.set_mode(size, DOUBLEBUF | OPENGL)
         pygame.display.set_caption(title)
+        # pygame.mouse.set_visible(False)
         # self.img = pygame.image.load("assets/cara.png")
         self.clock = pygame.time.Clock()
         
@@ -69,7 +70,7 @@ class Game(object):
 
         # Clear backbuffer
         gl.glClearColor(0.3, 0.2, 0.1, 1.0)
-        gl.glClear(gl.GL_COLOR_BUFFER_BIT)
+        gl.glClear(gl.GL_COLOR_BUFFER_BIT | gl.GL_DEPTH_BUFFER_BIT)
         # self.window_surface.blit(self.img, (-30, -30))
         # self.scene.draw()
 
