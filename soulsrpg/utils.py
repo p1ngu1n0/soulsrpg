@@ -4,7 +4,7 @@ from pygame.locals import *
 from typing import NamedTuple, Tuple, overload
 from abc import ABC, abstractmethod
 import OpenGL.GL as gl
-"""
+
 class Scene(ABC):
     @abstractmethod
     def update(self, dt: float):
@@ -13,10 +13,6 @@ class Scene(ABC):
     @abstractmethod
     def render(self):
         pass
-"""
-
-    
-
 
 class Game(object):
     # The surface where to draw
@@ -29,9 +25,10 @@ class Game(object):
 
         # Initialize pygame and the window
         pygame.init()
-        self.scene = scene
+        # self.scene = scene
         self.window_surface = pygame.display.set_mode(size, DOUBLEBUF | OPENGL)
         pygame.display.set_caption(title)
+
         self.clock = pygame.time.Clock()
         
 
@@ -41,13 +38,11 @@ class Game(object):
         while self.running:
             self.clock.tick(60)
             self.update()
-        pygame.quit()
-            
+            self.render()
 
          # No cleanup `pygame.quit()` needed as the application is going to fully close
          # Here state saves will be placed
          # Exit the application with no errors
-        sys.exit()
 
     def update(self):
         """ Gets pygame events and register them in the `MouseListener`, `KeyListener` and
@@ -62,10 +57,9 @@ class Game(object):
         for event in pygame.event.get():
             if event.type == QUIT:
                 self.running = False
-        self.scene.update()
-        self.scene.draw()
+        # self.scene.update()
 
-    def draw(self):
+    def render(self):
         """ Main rendering
 
             When scene manager defined requires on it to call `render` method in the active
@@ -76,13 +70,7 @@ class Game(object):
         gl.glClearColor(0.3, 0.2, 0.1, 1.0)
         gl.glClear(gl.GL_COLOR_BUFFER_BIT)
 
+        # self.scene.draw()
+
         # Swap buffers
         pygame.display.flip()
-        
-class Scene(Game):
-    def __init__(self) -> None:
-        pass
-    def update(self):
-        pass
-    def draw(self):
-        pass
