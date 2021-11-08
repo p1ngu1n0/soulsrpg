@@ -4,6 +4,7 @@ from pygame.locals import *
 from typing import NamedTuple, Tuple, overload
 from abc import ABC, abstractmethod
 import OpenGL.GL as gl
+from OpenGL.GLU import *
 
 class Scene(ABC):
     @abstractmethod
@@ -26,9 +27,9 @@ class Game(object):
         # Initialize pygame and the window
         pygame.init()
         # self.scene = scene
-        self.window_surface = pygame.display.set_mode(size) #, DOUBLEBUF | OPENGL)
+        self.window_surface = pygame.display.set_mode(size) , DOUBLEBUF | OPENGL)
         pygame.display.set_caption(title)
-        self.img = pygame.image.load("assets/cara.png")
+        # self.img = pygame.image.load("assets/cara.png")
         self.clock = pygame.time.Clock()
         
 
@@ -67,9 +68,9 @@ class Game(object):
         """
 
         # Clear backbuffer
-        #gl.glClearColor(0.3, 0.2, 0.1, 1.0)
-        #gl.glClear(gl.GL_COLOR_BUFFER_BIT)
-        self.window_surface.blit(self.img, (-30, -30))
+        gl.glClearColor(0.3, 0.2, 0.1, 1.0)
+        gl.glClear(gl.GL_COLOR_BUFFER_BIT)
+        # self.window_surface.blit(self.img, (-30, -30))
         # self.scene.draw()
 
         # Swap buffers
