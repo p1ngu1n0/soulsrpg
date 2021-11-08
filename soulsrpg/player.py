@@ -2,23 +2,15 @@ import pygame
 from pygame.constants import K_LEFT, K_RIGHT
 
 class Player(pygame.sprite.Sprite):
-    def __init__(self, hp: int = 10,
-        stamina: int = 10, 
-        exp: int = 0,
-        lvl: int = 0,
-        live: bool = True,
-        souls: int = 0,
-        plr_x: int = 0,
-        plr_y: int = 0
-    ) -> None:
+    def __init__(self, **stats) -> None:
         super().__init__()
-        self.hp = hp
-        self.exp = exp
-        self.lvl = lvl
-        self.live = live
-        self.plr_x = plr_x
-        self.plr_y = plr_y
-        self.stamina = stamina
+        self.hp = stats.get("hp", int)
+        self.exp = stats.get("exp", int)
+        self.lvl = stats.get("lvl", int)
+        self.live = stats.get("live", int)
+        self.plr_x = stats.get("plr_x", int)
+        self.plr_y = stats.get("plr_y", int)
+        self.stamina = stats.get("stamina", int)
         self.image = pygame.image.load("assets/cara.png").convert()
         self.rect = self.image.get_rect()
 
