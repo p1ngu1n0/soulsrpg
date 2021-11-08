@@ -36,8 +36,9 @@ class Game(object):
         """
         while self.running:
             self.clock.tick(60)
-            self.scene.update()
-            self.scene.draw()
+            self.update()
+        pygame.quit()
+            
 
          # No cleanup `pygame.quit()` needed as the application is going to fully close
          # Here state saves will be placed
@@ -57,6 +58,8 @@ class Game(object):
         for event in pygame.event.get():
             if event.type == QUIT:
                 self.running = False
+        self.scene.update()
+        self.scene.draw()
 
     def draw(self):
         """ Main rendering
