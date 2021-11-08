@@ -1,5 +1,5 @@
-import sys
 import pygame
+from .player import Player
 from pygame.locals import *
 from typing import NamedTuple, Tuple, overload
 from abc import ABC, abstractmethod
@@ -38,8 +38,9 @@ class Game(object):
         # States initialization
         self.running = True
         self.mouse = MouseListener()
-        self.img = pygame.image.load("assets/cara.png")
+        # self.img = pygame.image.load("assets/cara.png")
         self.clock = pygame.time.Clock()
+        self.all_sprites = pygame.sprite.Group(Player())
         
 
     def run(self):
@@ -75,6 +76,7 @@ class Game(object):
             print("Dragging")
         if self.mouse.rel() != (0.0, 0.0) and not self.mouse.is_dragging:
             print("Just Mouse move")
+        self.all_sprites.update()
 
     def render(self):
         """ Main rendering
@@ -82,12 +84,12 @@ class Game(object):
             When scene manager defined requires on it to call `render` method in the active
             scenes
         """
-
+        self.window_surface.fill((0, 0, 0))
         # Clear backbuffer
         # gl.glClearColor(0.3, 0.2, 0.1, 1.0)
         # gl.glClear(gl.GL_COLOR_BUFFER_BIT)
-        self.window_surface.blit(self.img, (-30, -30))
+        # self.window_surface.blit(self.img, (-30, -30))
         # self.scene.draw()
-
+        self.all_sprites.draw(self.window_surface)
         # Swap buffers
         pygame.display.flip()
