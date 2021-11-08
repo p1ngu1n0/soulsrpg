@@ -19,20 +19,28 @@ class Game(object):
     # Variable to know when to stop the game
     running: bool
     
-    def __init__(self, title: str, size: Tuple[int, int]):
+    def __init__(self, title: str, size: Tuple[int, int], scene: None):
         self.running = True
 
         # Initialize pygame and the window
         pygame.init()
+        self.scene = scene
         self.window_surface = pygame.display.set_mode(size, DOUBLEBUF | OPENGL)
         pygame.display.set_caption(title)
+        self.clock = pygame.time.Clock()
+        
 
     def run(self):
         """ Game main loop 
         """
         while self.running:
-            self.update()
-            self.draw()
+            self.clock.tick(60)
+            for event in pygame.event.get():
+                if event.type == pygame.QUIT():
+                    self.running = False
+            self.scene.update()
+            self.scene.draw()
+            pygame.display.update()
 
          # No cleanup `pygame.quit()` needed as the application is going to fully close
          # Here state saves will be placed
