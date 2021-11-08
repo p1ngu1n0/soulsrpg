@@ -6,7 +6,7 @@ from OpenGL.GL import *
 from OpenGL.GLU import *
 import numpy as np
 
-from .shaders import Shader, Mesh
+from .shaders import Shader, Mesh, Texture
 from .listener import *
 
 class Scene(ABC):
@@ -84,16 +84,21 @@ class Game(object):
             scenes
         """
         VERTICES = np.array([
-            -0.2, -0.2, 0.0,
-            0.0,   0.2, 0.0,
-            0.2,  -0.2, 0.0
+            -0.7, -0.7, 0.0,    0.0, 0.0,
+            -0.7,  0.7, 0.0,    0.0, 1.0,
+            0.7,   0.7, 0.0,    1.0, 1.0,
+            0.7,  -0.7, 0.0,    1.0, 0.0
         ], dtype=np.float32)
+        INDICES = np.array([0, 1, 3, 1, 2, 3])
+
         def_shader = Shader("default")
         def_shader.use()
-        triangle = Mesh(VERTICES)
+        triangle = Mesh(VERTICES, INDICES)
+        wall = Texture("wall.jpg")
         # Clear backbuffer
         glClearColor(0.3, 0.2, 0.1, 1.0)
         glClear(GL_COLOR_BUFFER_BIT)
+        wall.bind()
         triangle.draw()
         # Swap buffers
         pygame.display.flip()
