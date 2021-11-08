@@ -32,7 +32,6 @@ class Game(object):
     def __init__(self, title: str, size: Tuple[int, int], scene: None):
         # Initialize pygame and the window
         pygame.init()
-<<<<<<< HEAD
         self.window_surface = pygame.display.set_mode(size) #, DOUBLEBUF | OPENGL)
         pygame.display.set_caption(title)
 
@@ -40,13 +39,6 @@ class Game(object):
         self.running = True
         self.mouse = MouseListener()
         self.img = pygame.image.load("assets/cara.png")
-=======
-        # self.scene = scene
-        self.window_surface = pygame.display.set_mode(size, DOUBLEBUF | OPENGL)
-        pygame.display.set_caption(title)
-        # pygame.mouse.set_visible(False)
-        # self.img = pygame.image.load("assets/cara.png")
->>>>>>> df25ae5c50b29a7e6c5046884951a3f8d7b16fae
         self.clock = pygame.time.Clock()
         
 
@@ -81,6 +73,8 @@ class Game(object):
 
         if self.mouse.is_dragging:
             print("Dragging")
+        if self.mouse.rel() != (0.0, 0.0) and not self.mouse.is_dragging:
+            print("Just Mouse move")
 
     def render(self):
         """ Main rendering
@@ -90,15 +84,9 @@ class Game(object):
         """
 
         # Clear backbuffer
-<<<<<<< HEAD
         # gl.glClearColor(0.3, 0.2, 0.1, 1.0)
         # gl.glClear(gl.GL_COLOR_BUFFER_BIT)
         self.window_surface.blit(self.img, (-30, -30))
-=======
-        gl.glClearColor(0.3, 0.2, 0.1, 1.0)
-        gl.glClear(gl.GL_COLOR_BUFFER_BIT | gl.GL_DEPTH_BUFFER_BIT)
-        # self.window_surface.blit(self.img, (-30, -30))
->>>>>>> df25ae5c50b29a7e6c5046884951a3f8d7b16fae
         # self.scene.draw()
 
         # Swap buffers
