@@ -10,10 +10,11 @@ class Game(object):
         self.window_surface = pygame.display.set_mode(size, DOUBLEBUF | OPENGL)
         pygame.display.set_caption(title)
 
-
+"""
 def main() -> int:
     g = Game("Hello pygame", (500, 500))
     return 0
 
 if __name__ == "__main__":
     exit(main())
+"""
