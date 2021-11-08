@@ -4,7 +4,7 @@ from pygame.locals import *
 from typing import NamedTuple, Tuple, overload
 from abc import ABC, abstractmethod
 import OpenGL.GL as gl
-
+"""
 class Scene(ABC):
     @abstractmethod
     def update(self, dt: float):
@@ -13,6 +13,10 @@ class Scene(ABC):
     @abstractmethod
     def render(self):
         pass
+"""
+
+    
+
 
 class Game(object):
     # The surface where to draw
@@ -74,3 +78,11 @@ class Game(object):
 
         # Swap buffers
         pygame.display.flip()
+        
+class Scene(Game):
+    def __init__(self) -> None:
+        pass
+    def update(self):
+        pass
+    def draw(self):
+        pass
