@@ -27,7 +27,7 @@ class Game(object):
         # Initialize pygame and the window
         pygame.init()
         # self.scene = scene
-        self.window_surface = pygame.display.set_mode(size) , DOUBLEBUF | OPENGL)
+        self.window_surface = pygame.display.set_mode(size , DOUBLEBUF | OPENGL)
         pygame.display.set_caption(title)
         # self.img = pygame.image.load("assets/cara.png")
         self.clock = pygame.time.Clock()
