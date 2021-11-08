@@ -1,9 +1,9 @@
 from OpenGL.GL import *
 import sys
+from pathlib import Path
 import numpy as np
 
 VBO_POS   = 0
-N_VBO     = 1
 
 class Mesh(object):
     vertices: [np.array]
@@ -14,20 +14,21 @@ class Mesh(object):
         self.vertices = vertices
 
         self.VAO = glGenVertexArrays(1)
-        glBindVertexArray(VAO)
+        glBindVertexArray(self.VAO)
     
-        self.VBOs = glGenBuffers(N_VBO)
-        glBindBuffer(GL_ARRAY_BUFFER, self.VBOs[VBO_POS])
-        glBufferData(GL_ARRAY_BUFFER, vertices.size * vertices.itemsize, vertices, GL_STATIC_DRAW)
+        self.VBOs = []
+        self.VBOs.append(glGenBuffers(1))
 
-        glEnableVertexAtribArray(0)
-        glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, 0)
+        glBindBuffer(GL_ARRAY_BUFFER, self.VBOs[VBO_POS])
+        glBufferData(GL_ARRAY_BUFFER, self.vertices, GL_STATIC_DRAW)
+        glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, None)
+        glEnableVertexAttribArray(0)
 
         glBindVertexArray(0)
 
     def draw(self):
         glBindVertexArray(self.VAO)
-        glDrawArrays(GL_TRIANGLES, 0, vertices.size)
+        glDrawArrays(GL_TRIANGLES, 0, self.vertices.size)
         glBindVertexArray(0);
 
 class Shader(object):
@@ -39,13 +40,17 @@ class Shader(object):
         # Load the shader sources
         vs_path = f"assets/shaders/{name}.vert" 
         fs_path = f"assets/shaders/{name}.frag" 
-        vs_fd = open(vs_path, "r")
-        fs_fs = open(fs_path, "r")
-    
+
+        vs = Path(vs_path).read_text()
+        fs = Path(fs_path).read_text()
+        
         self.program = link_program(
-            compile_shader(vs_fd.readlines(), GL_VERTEX_SHADER),
-            compile_shader(fs_fd.readlines(), GL_FRAGMENT_SHADER)
+            compile_shader(vs, GL_VERTEX_SHADER),
+            compile_shader(fs, GL_FRAGMENT_SHADER)
         )
+
+    def use(self):
+        glUseProgram(self.program)
 
     def uniform_loc(self, name: str) -> GLuint:
         return glGetUniformLocation(self.program, name)
@@ -57,6 +62,7 @@ class Shader(object):
 def compile_shader(src: str, ty: GLenum) -> GLuint:
     # Create and compile
     shader = glCreateShader(ty)
+    glShaderSource(shader, src)
     glCompileShader(shader)
 
     # Error checking and reporting (crash on error)
@@ -73,7 +79,7 @@ def link_program(vs: GLuint, fs: GLuint) -> GLuint:
     glLinkProgram(program)
 
     # Error checking and reporting (crash on error)
-    if glGetShaderiv(program, GL_LINK_STATUS) != GL_TRUE:
+    if glGetProgramiv(program, GL_LINK_STATUS) != GL_TRUE:
         info_log = glGetProgramInfoLog(program)
         sys.exit(info_log)
 
