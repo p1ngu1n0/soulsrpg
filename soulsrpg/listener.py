@@ -46,8 +46,9 @@ class MouseListener(object):
                     # __dict__ so maybe also update buttons here
                 # Contains `pos` and `button` fields
                 case pygame.MOUSEBUTTONUP | pygame.MOUSEBUTTONDOWN:
-                    self._motion(event)
+                    # This order matters, if changes `is_dragging` brokes
                     self._button(event)
+                    self._motion(event)
                 case pygame.MOUSEWHEEL:
                     self._scroll(event)
 
