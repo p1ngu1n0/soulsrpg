@@ -86,12 +86,14 @@ class Game(object):
             When scene manager defined requires on it to call `render` method in the active
             scenes
         """
-        self.window_surface.fill((0, 0, 0))
+        self.window_surface.fill((255, 255, 255))
         # Clear backbuffer
         # gl.glClearColor(0.3, 0.2, 0.1, 1.0)
         # gl.glClear(gl.GL_COLOR_BUFFER_BIT)
         # self.window_surface.blit(self.img, (-30, -30))
         # self.scene.draw()
-        self.all_sprites.draw(self.window_surface)
+        for sprite in self.all_sprites:
+            sprite.draw(self.window_surface)
+        # self.all_sprites.draw(self.window_surface)
         # Swap buffers
         pygame.display.flip()
