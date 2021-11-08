@@ -36,7 +36,7 @@ class Game(object):
          # No cleanup `pygame.quit()` needed as the application is going to fully close
          # Here state saves will be placed
          # Exit the application with no errors
-         sys.exit(0)
+        sys.exit(0)
 
     def update(self):
         """ Gets pygame events and register them in the `MouseListener`, `KeyListener` and
