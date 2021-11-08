@@ -8,8 +8,8 @@ class Shader(object):
 
     def __init__(self, name: str):
         # Load the shader sources
-        vs_path = f"assets/shaders/{}.vert"
-        fs_path = f"assets/shaders/{}.frag"
+        vs_path = f"assets/shaders/{name}.vert" 
+        fs_path = f"assets/shaders/{name}.frag" 
         vs_fd = open(vs_path, "r")
         fs_fs = open(fs_path, "r")
     

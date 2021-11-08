@@ -1,9 +1,16 @@
 import pygame
 from pygame.constants import K_LEFT, K_RIGHT
 
-
 class Player(pygame.sprite.Sprite):
-    def __init__(self, hp: int = 10, stamina: int = 10, exp: int = 0, lvl: int = 0, live: bool = True, souls: int = 0, plr_x: int = 0, plr_y: int = 0) -> None:
+    def __init__(self, hp: int = 10,
+        stamina: int = 10, 
+        exp: int = 0,
+        lvl: int = 0,
+        live: bool = True,
+        souls: int = 0,
+        plr_x: int = 0,
+        plr_y: int = 0
+    ) -> None:
         super().__init__()
         self.hp = hp
         self.exp = exp

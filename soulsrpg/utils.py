@@ -38,6 +38,7 @@ class Game(object):
         # States initialization
         self.running = True
         self.mouse = MouseListener()
+        self.keyboard = KeyListener()
         # self.img = pygame.image.load("assets/cara.png")
         self.clock = pygame.time.Clock()
         self.all_sprites = pygame.sprite.Group(Player())
