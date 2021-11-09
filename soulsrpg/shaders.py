@@ -4,6 +4,7 @@ import pygame
 from pathlib import Path
 import numpy as np
 import ctypes
+from typing import TypeVar
 
 class Mesh(object):
     vertices: np.array
@@ -67,6 +68,7 @@ class Texture(object):
         glActiveTexture(GL_TEXTURE0 + unit);
         glBindTexture(GL_TEXTURE_2D, self.texture)
 
+T = TypeVar("T", int, float, np.array)
 class Shader(object):
     # The program id and its state
     program: GLuint
@@ -88,11 +90,38 @@ class Shader(object):
     def use(self):
         glUseProgram(self.program)
 
+    def upload(name: str, value: T):
+        loc = glGetUniformLocation(self.program, name)
+        if loc == -1:
+            sys.exit("Invalid uniform name")
+        self.use()
+        match value.__class__.__name__:
+            case "float":
+                glUniform1f(loc, value)
+            case "int":
+                glUnifrom1i(loc, value)
+            case "np.ndarray":
+                if value.dtype != "float64":
+                    sys.exit("Numpy float64 dtypes is the only one supported")
+                match value.shape:
+                    case (2, 2):
+                        glUniformMatrix2fv(loc, value)
+                    case (3, 3):
+                        glUniformMatrix3fv(loc, value)
+                    case (4, 4):
+                        glUniformMatrix4fv(loc, value)
+                    case (3,):
+                        glUniform3f(loc, value)
+                    case (4,):
+                        glUniform4f(loc, value)
+                    case _:
+                        sys.exit("Invalid np.ndarray shape, can't upload to uniform")
+                    
+            case _:
+                sys.exit("Unknown uniform type to upload")
+
     def uniform_loc(self, name: str) -> GLuint:
         return glGetUniformLocation(self.program, name)
-
-    def attrib_loc(self, name: str) -> GLuint:
-        return glGetAtrribLocation(self.program, name)
 
 
 def compile_shader(src: str, ty: GLenum) -> GLuint:

@@ -8,15 +8,7 @@ import numpy as np
 
 from .shaders import Shader, Mesh, Texture
 from .listener import *
-
-class Scene(ABC):
-    @abstractmethod
-    def update(self, dt: float):
-        pass
-
-    @abstractmethod
-    def render(self):
-        pass
+from .scene import LevelScene, SceneManager
 
 class Game(object):
     # The surface where to draw
@@ -26,6 +18,7 @@ class Game(object):
     # Listeners
     mouse: MouseListener
     keyboard: KeyListener
+    scene_manager: SceneManager
     # pad: PadListener**
     # pencil: PencilListener**
     # mic: AudioListener**
@@ -40,13 +33,13 @@ class Game(object):
         self.running = True
         self.mouse = MouseListener()
         self.keyboard = KeyListener()
-        self.clock = pygame.time.Clock()
+        self.scene_manager = SceneManager(["level"], 
+                                          {"level": LevelScene(self.keyboard, self.mouse)})
 
     def run(self):
         """ Game main loop 
         """
         while self.running:
-            self.clock.tick(60)
             self.update()
             self.render()
 
@@ -72,10 +65,17 @@ class Game(object):
                 self.mouse.retrieve(event)
         self.keyboard.retreive()
 
+        self.scene_manager.update()
+
+        """
         if self.mouse.is_dragging:
             print("Dragging")
         if self.mouse.rel() != (0.0, 0.0) and not self.mouse.is_dragging:
             print("Just Mouse move")
+        """
+        print(K_a)
+        if self.keyboard.key(K_a):
+            print("Pressed a")
 
     def render(self):
         """ Main rendering
@@ -83,22 +83,9 @@ class Game(object):
             When scene manager defined requires on it to call `render` method in the active
             scenes
         """
-        VERTICES = np.array([
-            -0.7, -0.7, 0.0,    0.0, 0.0,
-            -0.7,  0.7, 0.0,    0.0, 1.0,
-            0.7,   0.7, 0.0,    1.0, 1.0,
-            0.7,  -0.7, 0.0,    1.0, 0.0
-        ], dtype=np.float32)
-        INDICES = np.array([0, 1, 3, 1, 2, 3])
 
-        def_shader = Shader("default")
-        def_shader.use()
-        triangle = Mesh(VERTICES, INDICES)
-        wall = Texture("wall.jpg")
-        # Clear backbuffer
         glClearColor(0.3, 0.2, 0.1, 1.0)
         glClear(GL_COLOR_BUFFER_BIT)
-        wall.bind()
-        triangle.draw()
+        self.scene_manager.render()
         # Swap buffers
         pygame.display.flip()
