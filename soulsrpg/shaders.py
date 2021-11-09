@@ -87,10 +87,19 @@ class Shader(object):
             compile_shader(fs, GL_FRAGMENT_SHADER)
         )
 
-    def use(self):
-        glUseProgram(self.program)
+        self.in_use = False
+    
+    def detach(self):
+        if self.in_use:
+            glUseProgram(0)
+            self.in_use = False
 
-    def upload(name: str, value: T):
+    def use(self):
+        if not self.in_use:
+            glUseProgram(self.program)
+            self.in_use = True
+
+    def upload(self, name: str, value: T):
         loc = glGetUniformLocation(self.program, name)
         if loc == -1:
             sys.exit("Invalid uniform name")
@@ -101,7 +110,7 @@ class Shader(object):
             case "int":
                 glUnifrom1i(loc, value)
             case "np.ndarray":
-                if value.dtype != "float64":
+                if value.dtype != "float32":
                     sys.exit("Numpy float64 dtypes is the only one supported")
                 match value.shape:
                     case (2, 2):
@@ -119,6 +128,7 @@ class Shader(object):
                     
             case _:
                 sys.exit("Unknown uniform type to upload")
+        self.detach()
 
     def uniform_loc(self, name: str) -> GLuint:
         return glGetUniformLocation(self.program, name)

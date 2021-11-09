@@ -62,7 +62,7 @@ class LevelScene(Scene, object):
         self.mouse    = mouse
 
     def update(self, dt: float):
-        pass
+        self.shader.upload("uTime", dt * 100)
 
     def render(self):
         VERTICES = np.array([
