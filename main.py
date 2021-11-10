@@ -8,7 +8,7 @@ from soulsrpg.scenes import lvl1
 
 
 def main() -> int:
-    Director(lvl1).loop()
+    Director(lvl1()).loop()
     return 0
 
 
