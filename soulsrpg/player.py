@@ -12,7 +12,7 @@ class Player(pygame.sprite.Sprite):
         self.speed = stats.get("speed", 3)
         self.stamina = stats.get("stamina", int)
         self.pos = stats.get("pos", 0)
-        self.rect = pygame.Rect(300, 300, 64, 64)
+        self.rect = pygame.Rect(stats.get("pos", 300), stats.get("pos", 300), 64, 64)
         self.attack = stats.get("attack", False)
 
     def update(self) -> None:
