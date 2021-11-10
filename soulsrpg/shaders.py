@@ -109,16 +109,16 @@ class Shader(object):
                 glUniform1f(loc, value)
             case "int":
                 glUnifrom1i(loc, value)
-            case "np.ndarray":
-                if value.dtype != "float32":
+            case "ndarray":
+                if value.dtype != "float64":
                     sys.exit("Numpy float64 dtypes is the only one supported")
                 match value.shape:
                     case (2, 2):
-                        glUniformMatrix2fv(loc, value)
+                        glUniformMatrix2fv(loc, 1, GL_FALSE, value)
                     case (3, 3):
-                        glUniformMatrix3fv(loc, value)
+                        glUniformMatrix3fv(loc, 1, GL_FALSE, value)
                     case (4, 4):
-                        glUniformMatrix4fv(loc, value)
+                        glUniformMatrix4fv(loc, 1, GL_FALSE, value)
                     case (3,):
                         glUniform3f(loc, value)
                     case (4,):
