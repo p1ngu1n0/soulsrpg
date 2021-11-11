@@ -16,7 +16,6 @@ class Camera(object):
         self.adjust_proj()
 
     def adjust_proj(self):
-        """
         B = 0.0
         T = 32.0 * 21.0
         L = 0.0
@@ -30,17 +29,16 @@ class Camera(object):
                                      dtype=np.float32)
         test = pyrr.matrix44.create_orthogonal_projection(L, R, B, T, N, F, dtype=np.float32)
         assert np.array_equal(test, self.proj_matrix)
-        self.proj_matrix = test
         """
         self.proj_matrix = pyrr.matrix44.create_orthogonal_projection(
             0.0, 32.0 * 40.0,
             0.0, 32.0 * 21.0,
             0.0, 100.0, dtype=np.float32)
+        """
 
     def get_proj(self) -> np.array:
         return self.proj_matrix
 
-    """
     def get_view(self) -> np.array:
         # Where the camera is looking
         camera_target = np.array([0.0, 0.0, 0.0], dtype=np.float32)
@@ -71,8 +69,8 @@ class Camera(object):
                 np.array([self.position[0], self.position[1], 0.0]), up, dtype=np.float32)
 
         return test
-    """
 
+    """
     def get_view(self) -> np.array:
         camera_front = np.array([0.0, 0.0, -1.0], dtype=np.float32)
         camera_up    = np.array([0.0, 1.0,  0.0], dtype=np.float32)
@@ -84,5 +82,6 @@ class Camera(object):
             ], dtype=np.float32), camera_up, dtype=np.float32
         )
         return self.view_matrix
+    """
 
 

@@ -33,7 +33,7 @@ class Game(object):
         self.running = True
         self.mouse = MouseListener()
         self.keyboard = KeyListener()
-        self.scene_manager = SceneManager(["level"], 
+        self.scene_manager = SceneManager(["level", "example_scene"], 
                                           {"level": LevelScene(self.keyboard, self.mouse)})
 
     def run(self):
@@ -86,5 +86,6 @@ class Game(object):
         glClearColor(0.3, 0.2, 0.1, 1.0)
         glClear(GL_COLOR_BUFFER_BIT)
         self.scene_manager.render()
+
         # Swap buffers
         pygame.display.flip()

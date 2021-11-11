@@ -7,28 +7,39 @@ import sys
 import time
 import pyrr
 
+from .ecs import Entity, Component
 from .shaders import Shader, Mesh, Texture
 from .listener import *
 from .camera import Camera
 
 class Scene(ABC):
-    @abstractmethod
-    def update(self, dt: float):
-        pass
+    is_running: bool = False
+    entities: List[Entity] = []
 
-    @abstractmethod
+    def start(self):
+        self.is_running = True
+        for e in self.entities:
+            e.start()
+
+    def update(self, dt: float):
+        for e in self.entities:
+            e.update(dt)
+
     def render(self):
-        pass
+        for e in self.entities:
+            e.render()
 
 class SceneManager(object):
     it: float
     scenes: Dict[str, Scene]
     default_order: List[str]
+    curr_scene: Optional[str] = None
 
-    def __init__(self, default_order: List[str], scenes: Dict[str, Scene] = []):
+    def __init__(self, default_order: List[str], scenes: Dict[str, Scene]):
         self.it = time.time()
         self.default_order = default_order
         self.scenes = scenes
+        self.change_scene(default_order[0])
 
     def add_scene(self, scene_name: str, scene: Scene):
         self.scenes.append({scene_name, scene})
@@ -36,25 +47,53 @@ class SceneManager(object):
     def del_scene(self, scene_name: str):
         try:
             del self.scenes[scene_name]
+            del self.default_order[0]
+            self.curr_scene = None
         except KeyError:
             sys.exit(f"Scene with name: {scene_name} failed to delete")
 
-    def set_order(self, order: List[str]):
-        self.default_order = order
+    def set_order(self, new_order: List[str]):
+        self.default_order = new_order
+
+    def check(self):
+        if self.curr_scene == None:
+            try: 
+                self.scenes[self.default_order[0]]
+                self.curr_scene = self.default_order[0]
+            except IndexError:
+                sys.exit("Cannot get current scene")
+
+    def change_scene(self, scene_name: Optional[str] = None):
+        self.check()
+        if scene_name == None:
+            # NOTE: Should I remove scenes on change?
+            # del self.default_order[0]
+            if len(self.default_order) > 0:
+                self.scenes[self.curr_scene].is_running = False
+                self.curr_scene = self.default_order[1]
+                self.scenes[self.curr_scene].start()
+                return
+            else:
+                sys.exit("Cannot change scene, EOG")
+        if not scene_name in self.default_order:
+            sys.exit("Scecne not avaible")
+        
+        for k, v in self.scenes.items():
+            if k == scene_name:
+                v.start()
+                self.curr_scene = scene_name
+                return
+        sys.exit("Unexpected error")
 
     def update(self):
-        try:
-            dt = time.time() - self.it
-            self.it = time.time()
-            self.scenes[self.default_order[0]].update(dt)
-        except IndexError:
-            sys.exit("Scene Manager got out of scenes")
+        self.check()
+        dt = time.time() - self.it
+        self.it = time.time()
+        self.scenes[self.curr_scene].update(dt)
 
     def render(self):
-        try:
-            self.scenes[self.default_order[0]].render()
-        except IndexError:
-            sys.exit("Scene Manager got out of scenes")
+        self.check()
+        self.scenes[self.curr_scene].render()
 
 class LevelScene(Scene, object):
     it: float
@@ -70,9 +109,23 @@ class LevelScene(Scene, object):
         self.mouse    = mouse
         self.camera = Camera(np.array([0.0, 0.0, 20.0], dtype=np.float32))
 
+    def add_entity(self, e: Entity):
+        if not self.is_running:
+            self.entities.append(e)
+        else:
+            self.entities.append(e)
+            e.start()
+
+    def start(self):
+        print("Starting Level Scene")
+        super().start()
+
     def update(self, dt: float):
+        super().update(dt)
+        self.camera.position[0] -= dt * 50.0
+        self.camera.position[1] -= dt * 50.0
+
         self.shader.use()
-        self.camera.adjust_proj()
         self.shader.upload("uView", self.camera.get_view())
         self.shader.upload("uProj", self.camera.get_proj())
 
@@ -81,6 +134,7 @@ class LevelScene(Scene, object):
         self.shader.detach()
 
     def render(self):
+        super().render()
         VERTICES = np.array([
             -50.7, -50.7, 0.0,    0.0, 0.0,
             -50.7,  50.7, 0.0,    0.0, 1.0,
