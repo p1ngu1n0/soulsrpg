@@ -73,7 +73,6 @@ class Game(object):
         if self.mouse.rel() != (0.0, 0.0) and not self.mouse.is_dragging:
             print("Just Mouse move")
         """
-        print(K_a)
         if self.keyboard.key(K_a):
             print("Pressed a")
 

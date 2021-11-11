@@ -5,9 +5,10 @@ layout(location = 1) in vec2 aTexCoord;
 
 out vec2 TexCoord;
 
-uniform mat4 transform;
+uniform mat4 uProj;
+uniform mat4 uView;
 
 void main() {
-	gl_Position = transform * vec4(aPos, 1.0);
+	gl_Position = uProj * uView * vec4(aPos, 1.0);
 	TexCoord = aTexCoord;
 }

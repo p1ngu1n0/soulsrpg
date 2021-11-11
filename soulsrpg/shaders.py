@@ -93,25 +93,30 @@ class Shader(object):
         if self.in_use:
             glUseProgram(0)
             self.in_use = False
+        else:
+            sys.exit("Shader already detached")
 
     def use(self):
         if not self.in_use:
             glUseProgram(self.program)
             self.in_use = True
+        else:
+            sys.exit("Shader already in use")
 
     def upload(self, name: str, value: T):
+        if not self.in_use:
+            sys.exit("shader not in use")
         loc = glGetUniformLocation(self.program, name)
         if loc == -1:
             sys.exit("Invalid uniform name")
-        self.use()
         match value.__class__.__name__:
             case "float":
                 glUniform1f(loc, value)
             case "int":
                 glUnifrom1i(loc, value)
             case "ndarray":
-                if value.dtype != "float64":
-                    sys.exit("Numpy float64 dtypes is the only one supported")
+                if value.dtype != "float32":
+                    sys.exit("Numpy float32 dtypes is the only one supported")
                 match value.shape:
                     case (2, 2):
                         glUniformMatrix2fv(loc, 1, GL_FALSE, value)
@@ -128,7 +133,6 @@ class Shader(object):
                     
             case _:
                 sys.exit("Unknown uniform type to upload")
-        self.detach()
 
     def uniform_loc(self, name: str) -> GLuint:
         return glGetUniformLocation(self.program, name)
