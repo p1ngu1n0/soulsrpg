@@ -1,122 +1,68 @@
 from OpenGL.GL import *
 import sys
-import pygame
 from pathlib import Path
 import numpy as np
-import ctypes
 from typing import TypeVar
 
-class Mesh(object):
-    vertices: np.array
-    indices:  np.array
-    VAO: GLuint
-    VBO: GLuint
-    EBO: GLuint
-
-    def __init__(self, vertices: np.array, indices: np.array):
-        self.vertices = vertices
-        self.indices  = indices
-
-        self.VAO = glGenVertexArrays(1)
-        glBindVertexArray(self.VAO)
-
-        self.EBO = glGenBuffers(1)
-        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, self.EBO)
-        glBufferData(GL_ELEMENT_ARRAY_BUFFER, self.indices, GL_STATIC_DRAW)
-
-        self.VBO = glGenBuffers(1)
-        glBindBuffer(GL_ARRAY_BUFFER, self.VBO)
-        glBufferData(GL_ARRAY_BUFFER, self.vertices, GL_STATIC_DRAW)
-
-        glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 
-            self.vertices.itemsize * 5, ctypes.c_void_p(0))
-        glEnableVertexAttribArray(0)
-
-        glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE,
-            self.vertices.itemsize * 5, 
-            ctypes.c_void_p(self.vertices.itemsize * 3))
-        glEnableVertexAttribArray(1)
-
-    def draw(self):
-        glBindVertexArray(self.VAO)
-        glDrawElements(GL_TRIANGLES, len(self.indices), GL_UNSIGNED_INT, None)
-        glBindVertexArray(0);
-
-class Texture(object):
-    texture: GLint
-    image:   bytes
-
-    def __init__(self, name):
-        surf = pygame.image.load(f"assets/images/{name}")
-        width, height = surf.get_size()
-        self.image = pygame.image.tostring(surf, "RGBA", 1)
-        self.texture = glGenTextures(1)
-        glBindTexture(GL_TEXTURE_2D, self.texture)
-
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT)
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT)
-
-        glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR)
-        glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR)
-
-        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, 
-                     width, height, 0, GL_RGBA, 
-                     GL_UNSIGNED_BYTE, self.image)
-
-    def bind(self, unit: int = 0):
-        assert 0 <= unit <= 31
-        glActiveTexture(GL_TEXTURE0 + unit);
-        glBindTexture(GL_TEXTURE_2D, self.texture)
-
 T = TypeVar("T", int, float, np.array)
-class Shader(object):
+class Shader:
     # The program id and its state
     program: GLuint
     in_use:  bool
 
     def __init__(self, name: str):
         # Load the shader sources
-        vs_path = f"assets/shaders/{name}.vert" 
-        fs_path = f"assets/shaders/{name}.frag" 
-
+        vs_path = f"assets/shaders/{name}.vert"
+        fs_path = f"assets/shaders/{name}.frag"
         vs = Path(vs_path).read_text()
         fs = Path(fs_path).read_text()
-        
+
+        # Compile the shaders and link them to generate a program
         self.program = link_program(
             compile_shader(vs, GL_VERTEX_SHADER),
             compile_shader(fs, GL_FRAGMENT_SHADER)
         )
 
         self.in_use = False
-    
-    def detach(self):
-        if self.in_use:
-            glUseProgram(0)
-            self.in_use = False
-        else:
-            sys.exit("Shader already detached")
 
     def use(self):
+        """ Use the shader only if its not in use, otherwise crash """
         if not self.in_use:
             glUseProgram(self.program)
             self.in_use = True
         else:
             sys.exit("Shader already in use")
 
+    def detach(self):
+        """ Detach the shader only if its in use, otherwise crash """
+        if self.in_use:
+            glUseProgram(0)
+            self.in_use = False 
+        else:
+            sys.exit("Shader isn't in use")
+
     def upload(self, name: str, value: T):
+        """ Upload a unifrom variable with name `name` and type `T` """ 
+        # The shader must be in use to upload uniforms
         if not self.in_use:
-            sys.exit("shader not in use")
+            sys.exit("Shader ins't in use, cannot upload")
+
+        # Get the uniform location
         loc = glGetUniformLocation(self.program, name)
         if loc == -1:
             sys.exit("Invalid uniform name")
+
+        # Matchs its type and if its a `np.ndarray` also its shape to upload correctly
         match value.__class__.__name__:
             case "float":
                 glUniform1f(loc, value)
             case "int":
-                glUnifrom1i(loc, value)
+                glUniform1i(loc, value)
             case "ndarray":
+                # OpenGL works with 32 bits by default but numpy with 64 bits
                 if value.dtype != "float32":
-                    sys.exit("Numpy float32 dtypes is the only one supported")
+                   sys.exit("Numpy float64 types not supported")
+
                 match value.shape:
                     case (2, 2):
                         glUniformMatrix2fv(loc, 1, GL_FALSE, value)
@@ -125,18 +71,13 @@ class Shader(object):
                     case (4, 4):
                         glUniformMatrix4fv(loc, 1, GL_FALSE, value)
                     case (3,):
-                        glUniform3f(loc, value)
+                        glUniform3f(loc, 1, GL_FALSE, value)
                     case (4,):
-                        glUniform4f(loc, value)
-                    case _:
-                        sys.exit("Invalid np.ndarray shape, can't upload to uniform")
-                    
-            case _:
-                sys.exit("Unknown uniform type to upload")
-
-    def uniform_loc(self, name: str) -> GLuint:
-        return glGetUniformLocation(self.program, name)
-
+                        glUniform4f(loc, 1, GL_FALSE, value)
+                    case s:
+                        sys.exit(f"np.ndarray with shape {s} not supported for uniform upload")
+            case t:
+                sys.exit(f"Type {t} not supported for uniform upload")
 
 def compile_shader(src: str, ty: GLenum) -> GLuint:
     # Create and compile

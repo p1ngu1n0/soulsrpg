@@ -6,7 +6,9 @@ from OpenGL.GL import *
 from OpenGL.GLU import *
 import numpy as np
 
-from .shaders import Shader, Mesh, Texture
+from .texture import Texture
+from .mesh import Mesh
+from .shaders import Shader
 from .listener import *
 from .scene import LevelScene, SceneManager
 
@@ -27,6 +29,7 @@ class Game(object):
         # Initialize pygame and the window
         pygame.init()
         self.window_surface = pygame.display.set_mode(size, DOUBLEBUF | OPENGL)
+        print(glGetString(GL_VERSION))
         pygame.display.set_caption(title)
 
         # States initialization

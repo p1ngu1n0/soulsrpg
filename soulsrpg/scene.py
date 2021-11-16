@@ -8,7 +8,9 @@ import time
 import pyrr
 
 from .ecs import Entity, Component
-from .shaders import Shader, Mesh, Texture
+from .shaders import Shader
+from .texture import Texture
+from .mesh import Mesh
 from .listener import *
 from .camera import Camera
 

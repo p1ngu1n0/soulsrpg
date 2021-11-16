@@ -1,7 +1,9 @@
 import numpy as np
 import pyrr
 
-from .shaders import Shader, Mesh, Texture
+from .shaders import Shader
+from .mesh import Mesh
+from .texture import Texture
 
 
 class Camera(object):
