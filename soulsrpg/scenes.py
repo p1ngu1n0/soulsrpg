@@ -1,14 +1,17 @@
 import pygame
 from pygame import draw
-from .player import Player, Enemy
-from .utils import Director
+from .player import Player, Enemy 
+from .utils import Director, TileSet
 
 
 class lvl1(Director):
     def __init__(self) -> None:
         super().__init__(self)
+        self.tile = TileSet("assets/tileset.png", 10, 28)
+        self.tile.gen_map(self.alto, self.ancho, 52)
         self.plr = Player()
         self.enm = Enemy()
+        
 
     def update(self):
         self.plr.update()
@@ -29,5 +32,7 @@ class lvl1(Director):
 
     def draw(self, screen):
         screen.fill((0, 0, 0))
+        
+        self.tile.draw(self.screen,self.tile.tilemap)
         self.plr.draw(self.screen)
         self.enm.draw(self.screen)

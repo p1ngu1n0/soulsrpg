@@ -1,5 +1,7 @@
+from typing import TypeGuard
 import pygame
 from pygame.constants import K_DOWN, K_LCTRL, K_LEFT, K_RIGHT, K_UP
+from pygame.draw import rect
 
 
 class Player(pygame.sprite.Sprite):
@@ -9,11 +11,12 @@ class Player(pygame.sprite.Sprite):
         self.exp = stats.get("exp", int)
         self.lvl = stats.get("lvl", int)
         self.live = stats.get("live", bool)
-        self.speed = stats.get("speed", 3)
+        self.speed = stats.get("speed", 2)
         self.stamina = stats.get("stamina", int)
         self.pos = stats.get("pos", 0)
-        self.rect = pygame.Rect(stats.get("pos", 300), stats.get("pos", 300), 64, 64)
+        self.rect = pygame.Rect(stats.get("pos", 300), stats.get("pos", 300), 16, 16)
         self.attack = stats.get("attack", False)
+        
 
     def update(self) -> None:
         keys = pygame.key.get_pressed()
@@ -35,19 +38,19 @@ class Player(pygame.sprite.Sprite):
     def draw(self, screen):
         pygame.draw.rect(screen, (255, 0, 0), self.rect, 2)
         if self.attack:
-            rect = pygame.Rect(0, 0, 32, 32)
-            rect.center = self.pos_attack(self.pos)
-            pygame.draw.rect(screen, (255, 0, 0), self.rect, 2)
+            rectc = pygame.Rect(0, 0, 8, 8)
+            rectc.center = self.pos_attack(self.pos)
+            pygame.draw.rect(screen, (255, 0, 0), rectc, 2)
             if pygame.time.get_ticks() >= 500:
                 self.attack = False
 
     def pos_attack(self, pos: int) -> int:
         self.pos = pos
         match self.pos:
-            case 0: return (self.rect.x+32, self.rect.y)
-            case 1: return (self.rect.x, self.rect.y+32)
-            case 2: return (self.rect.x-32, self.rect.y)
-            case 3: return (self.rect.x, self.rect.y-32)
+            case 0: return (self.rect.centerx+16, self.rect.centery)
+            case 1: return (self.rect.centerx, self.rect.centery+16)
+            case 2: return (self.rect.centerx-16, self.rect.centery)
+            case 3: return (self.rect.centerx, self.rect.centery-16)
 
 
 class Enemy(pygame.sprite.Sprite):
@@ -63,14 +66,21 @@ class Enemy(pygame.sprite.Sprite):
         self.stamina = stats.get("stamina", int)
         self.pos = stats.get("pos", 0)
         self.attack = stats.get("attack", False)
-        self.rect = pygame.Rect(self.enm_x, self.enm_y, 64, 64)
-        self.move = True
+        self.rect = pygame.Rect(self.enm_x, self.enm_y, 16, 16)
+        
 
-    def update(self):
-        if self.move:
-            self.rect.centerx += 3
-            if pygame.time.get_ticks() >= 500:
-                self.move = False
-
+    def update(self, events):
+        pygame.time.set_timer(pygame.USEREVENT+1, 0, True)
+        if pygame.event.get(pygame.USEREVENT+1):
+            self.rect.centerx += 1
+        else:
+            self.rect.centerx -= 1
+        
+        
     def draw(self, screen):
         pygame.draw.rect(screen, (0, 255, 0), self.rect, 2)
+
+class items(object):
+    def __init__(self, **stats) -> None:
+        super().__init__()
+        self.name = stats.get("name", str)
